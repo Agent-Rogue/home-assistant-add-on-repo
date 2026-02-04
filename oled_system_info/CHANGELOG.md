@@ -1,0 +1,13 @@
+# Changelog
+
+## [1.0.0] - 2025-02-03
+
+### Added
+- Initial release
+- Support for SSD1306 OLED display (128x32)
+- System information display (IP, hostname, CPU, memory)
+- GPIO button control
+- Reboot functionality (long press ~8 seconds)
+- Shutdown functionality (long press ~12 seconds)
+- LED indicator support
+- Auto-start on boot
