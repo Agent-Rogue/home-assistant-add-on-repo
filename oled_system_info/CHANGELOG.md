@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] - 2025-02-04
+
+### Added
+- Logo and icon
+
+### Fixed
+- Linting issues
+
 ## [1.0.0] - 2025-02-03
 
 ### Added

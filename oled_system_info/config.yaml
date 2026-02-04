@@ -1,13 +1,11 @@
 name: "OLED System Info Display"
 description: "Displays system information on SSD1306 OLED screen with GPIO button control for reboot/shutdown"
-version: "1.0.0"
+version: "1.0.1"
 slug: "oled_system_info"
 init: false
 devices:
-  - /dev/i2c-1:/dev/i2c-1:rwm
-  - /dev/gpiochip0:/dev/gpiochip0:rwm
-map:
-  - proc:ro
+  - /dev/i2c-1:rwm
+  - /dev/gpiochip0:rwm
 arch:
   - armhf
   - armv7
