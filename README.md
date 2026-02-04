@@ -9,8 +9,6 @@ This repository contains the following add-ons
 ### [OLED system info](./oled_system_info)
 
 ![Supports aarch64 Architecture][aarch64-shield]
-![Supports armv7 Architecture][armv7-shield]
-![Supports armhf Architecture][armhf-shield]
 
 _Add-on to use an OLED for system info and GPIO buttons for shutdown and reboot based on project by [leelooauto](https://github.com/leelooauto/system_info)._
 
@@ -34,5 +32,3 @@ Notes to developers after forking or using the github template feature:
  -->
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg

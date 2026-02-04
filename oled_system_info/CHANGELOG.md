@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.0] - 2025-02-05
+
+### Removed
+- Removed deprecated architectures
+
 ## [1.0.1] - 2025-02-04
 
 ### Added
