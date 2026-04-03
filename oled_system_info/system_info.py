@@ -82,28 +82,6 @@ class I2CAdapter:
             buffer[start + i] = byte
 
 
-def reboot_system():
-    """Reboot Home Assistant via Supervisor API"""
-    log("REBOOT: Triggering system reboot via Supervisor API")
-    try:
-        response = requests.post('http://supervisor/host/reboot', 
-                                headers={'Authorization': f'Bearer {os.getenv("SUPERVISOR_TOKEN")}'})
-        log(f"REBOOT: Response status: {response.status_code}")
-    except Exception as e:
-        log(f"REBOOT: Error - {e}")
-
-
-def shutdown_system():
-    """Shutdown Home Assistant via Supervisor API"""
-    log("SHUTDOWN: Triggering system shutdown via Supervisor API")
-    try:
-        response = requests.post('http://supervisor/host/shutdown',
-                                headers={'Authorization': f'Bearer {os.getenv("SUPERVISOR_TOKEN")}'})
-        log(f"SHUTDOWN: Response status: {response.status_code}")
-    except Exception as e:
-        log(f"SHUTDOWN: Error - {e}")
-
-
 def get_system_info():
     """Retrieve HOST system information via Supervisor API"""
     # Get host info
@@ -180,15 +158,12 @@ def main():
     log("Initializing OLED System Info Display")
     
     # GPIO configuration
-    INFO_BTN = 20
     LED = 23
     
     log(f"Configuring GPIO - Button: GPIO{INFO_BTN}, LED: GPIO{LED}")
     chip = gpiod.Chip('gpiochip0')
     led_line = chip.get_line(LED)
-    btn_line = chip.get_line(INFO_BTN)
     led_line.request(consumer="oled-display", type=gpiod.LINE_REQ_DIR_OUT, default_vals=[0])
-    btn_line.request(consumer="oled-display", type=gpiod.LINE_REQ_DIR_IN)
     log("GPIO configured successfully")
     
     # Display configuration
@@ -214,11 +189,8 @@ def main():
     disp_timer = 0
     menu_timer = 0
     menu_state = 0
-    last_button_state = 1
     
-    DISP_TIMEOUT = 15
-    REBOOT_TIMEOUT = 5
-    SHUTDOWN_TIMEOUT = 10
+    DISP_TIMEOUT = 0
     
     # Turn on LED
     led_line.set_value(1)
@@ -253,60 +225,19 @@ def main():
                 if menu_timer == 0:
                     log("Display activated")
                 
-                if menu_timer == REBOOT_TIMEOUT:
-                    log("MENU: Entering REBOOT state")
-                    menu_state = 1
-                
-                if menu_timer == SHUTDOWN_TIMEOUT:
-                    log("MENU: Entering SHUTDOWN state")
-                    menu_state = 2
-                
                 disp_timer = DISP_TIMEOUT
                 menu_timer += 1
             elif disp_timer == 0:
                 disp.image(image)
                 disp.show()
             
-            if disp_timer > 0:
+            if disp_timer == 0:
                 if menu_state == 0:
                     hostname, ip, cpu, mem = get_system_info()
                     draw.text((x, top),    f"NAME: {hostname}", font=font, fill=255)
                     draw.text((x, top+12), f"IP  : {ip}", font=font, fill=255)
                     draw.text((x, top+24), f"CPU : {cpu}% | MEM: {mem}%", font=font, fill=255)
                     disp_timer -= 1
-                    
-                    if disp_timer == 0:
-                        log("Display timeout - entering sleep mode")
-                    
-                    if button_state == 1:
-                        if menu_timer > 0:
-                            log("MENU: Reset to INFO state")
-                        menu_timer = 0
-                        menu_state = 0
-                
-                elif menu_state == 1:
-                    if button_state == 1:
-                        draw.text((x, top+12), "Performing Reboot...", font=font, fill=255)
-                        disp.image(image)
-                        disp.show()
-                        time.sleep(3)
-                        reboot_system()
-                    else:
-                        draw.text((x, top),    ".......Reboot.......", font=font, fill=255)
-                        draw.text((x, top+12), "   Release Button   ", font=font, fill=255)
-                        draw.text((x, top+24), "      To Reboot     ", font=font, fill=255)
-                
-                elif menu_state == 2:
-                    if button_state == 1:
-                        draw.text((x, top+12), "Shutting down.......", font=font, fill=255)
-                        disp.image(image)
-                        disp.show()
-                        time.sleep(3)
-                        shutdown_system()
-                    else:
-                        draw.text((x, top),    "......Shutdown......", font=font, fill=255)
-                        draw.text((x, top+12), "   Release Button   ", font=font, fill=255)
-                        draw.text((x, top+24), "    To Shutdown     ", font=font, fill=255)
                 
                 disp.image(image)
                 disp.show()
